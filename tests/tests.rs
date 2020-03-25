@@ -44,6 +44,7 @@ mod bragi_poi_test;
 mod bragi_stops_test;
 mod bragi_synonyms_test;
 mod bragi_three_cities_test;
+mod bragi_openaddresses_test;
 mod canonical_import_process_test;
 mod cosmogony2mimir_test;
 mod openaddresses2mimir_test;
@@ -144,6 +145,7 @@ fn all_tests() {
     bragi_osm_test::bragi_osm_test(ElasticSearchWrapper::new(&docker_wrapper));
     bragi_poi_test::test_i18n_poi(ElasticSearchWrapper::new(&docker_wrapper));
     bragi_three_cities_test::bragi_three_cities_test(ElasticSearchWrapper::new(&docker_wrapper));
+    bragi_openaddresses_test::bragi_openaddresses_test(ElasticSearchWrapper::new(&docker_wrapper));
     bragi_poi_test::bragi_poi_test(ElasticSearchWrapper::new(&docker_wrapper));
     bragi_poi_test::bragi_private_poi_test(ElasticSearchWrapper::new(&docker_wrapper));
     bragi_stops_test::bragi_stops_test(ElasticSearchWrapper::new(&docker_wrapper));
