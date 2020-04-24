@@ -94,10 +94,10 @@ pub struct Args {
     /// Custom timeout for the /features
     /// this is bounded by `max_es_timeout` and is used because for the moment we cannot easily change the timeout of a given rubber
     #[structopt(
-        long = "max-es-features-timeout",
-        env = "BRAGI_MAX_ES_FEATURES_TIMEOUT"
+        long = "max-es-feature-timeout",
+        env = "BRAGI_MAX_ES_FEATURE_TIMEOUT"
     )]
-    pub max_es_features_timeout: Option<u64>,
+    pub max_es_feature_timeout: Option<u64>,
 
     /// Cache duration for http response served by bragi
     /// This only set the Cache-control Header, it doesn't enable cache on bragi side
@@ -115,7 +115,7 @@ pub struct Args {
 #[derive(Clone, Debug)]
 pub struct Context {
     reverse_rubber: Rubber,
-    features_rubber: Rubber,
+    feature_rubber: Rubber,
     autocomplete_rubber: Rubber,
     pub cnx_string: String,
     pub http_cache_duration: u32,
@@ -150,9 +150,9 @@ impl TryFrom<&Args> for Context {
                 &args.connection_string,
                 bounded_timeout(args.max_es_reverse_timeout),
             ),
-            features_rubber: Rubber::new_with_timeout(
+            feature_rubber: Rubber::new_with_timeout(
                 &args.connection_string,
-                bounded_timeout(args.max_es_features_timeout),
+                bounded_timeout(args.max_es_feature_timeout),
             ),
             autocomplete_rubber: Rubber::new_with_timeout(
                 &args.connection_string,
@@ -177,8 +177,8 @@ impl Context {
     pub fn get_rubber_for_reverse(&self, timeout: Option<Duration>) -> Rubber {
         clone_or_create(&self.reverse_rubber, timeout)
     }
-    pub fn get_rubber_for_features(&self, timeout: Option<Duration>) -> Rubber {
-        clone_or_create(&self.features_rubber, timeout)
+    pub fn get_rubber_for_feature(&self, timeout: Option<Duration>) -> Rubber {
+        clone_or_create(&self.feature_rubber, timeout)
     }
     pub fn get_rubber_for_autocomplete(&self, timeout: Option<Duration>) -> Rubber {
         clone_or_create(&self.autocomplete_rubber, timeout)

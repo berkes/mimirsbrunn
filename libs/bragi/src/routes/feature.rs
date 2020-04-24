@@ -17,13 +17,15 @@ pub struct Params {
     timeout: Option<u64>,
 }
 
-pub fn features(
+pub fn feature(
     params: BragiQuery<Params>,
     state: Data<Context>,
     id: Path<String>,
 ) -> Result<HttpResponse, model::BragiError> {
-    let rubber = state.get_rubber_for_features(params.timeout.map(Duration::from_millis));
-    let features = query::features(
+    let rubber = state.get_rubber_for_feature(params.timeout.map(Duration::from_millis));
+    // Features is still plural because it can potentially return multiple
+    // features carrying the same ID because we search over multiple indexes.
+    let features = query::feature(
         &params
             .pt_dataset
             .iter()
