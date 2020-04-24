@@ -1,6 +1,6 @@
 use crate::extractors::ActixError;
 use crate::routes::{
-    autocomplete, entry_point, features, post_autocomplete, reverse, status, JsonParams,
+    autocomplete, entry_point, feature, post_autocomplete, reverse, status, JsonParams,
 };
 use crate::{Args, Context};
 use actix_web::FromRequest;
@@ -34,8 +34,8 @@ pub fn configure_server(cfg: &mut web::ServiceConfig) {
     )
     .service(
         web::resource("/features/{id}")
-            .name("features")
-            .route(web::get().to(features)),
+            .name("feature")
+            .route(web::get().to(feature)),
     )
     .service(
         web::resource("/reverse")

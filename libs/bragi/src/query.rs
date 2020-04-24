@@ -507,7 +507,7 @@ fn query(
     read_places(result, coord.as_ref())
 }
 
-pub fn features(
+pub fn feature(
     pt_datasets: &[&str],
     poi_datasets: &[&str],
     all_data: bool,
@@ -539,7 +539,7 @@ pub fn features(
     }
 
     let timer = ES_REQ_HISTOGRAM
-        .get_metric_with_label_values(&["features"])
+        .get_metric_with_label_values(&["feature"])
         .map(|h| h.start_timer())
         .map_err(
             |err| error!("impossible to get ES_REQ_HISTOGRAM metrics"; "err" => err.to_string()),
