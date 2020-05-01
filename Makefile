@@ -1,4 +1,5 @@
 TARGETS=bragi cosmogony2mimir openaddresses2mimir osm2mimir
+DEPLOY_HOST=sober-cassini.webschuur.com
 DEPLOY_TO=
 OSM_FILE=/mnt/sda/OSM/test-data/gelderland-latest.osm.pbf
 OA_FILE=/mnt/sda/OSM/openaddr/nl/countrywide.csv
@@ -8,7 +9,9 @@ all:
 	cargo build --release
 
 deploy:
-	for file in $(TARGETS); do scp target/release/$$file deploy@romantic-wilson.placebazaar.org:/usr/local/oot/bin/; done
+	## TODO: find a trick to overwrite a running binary without downtime
+	## Probably something with symlinks and versioned bin files.
+	for file in $(TARGETS); do scp target/release/$$file deploy@$(DEPLOY_HOST):/usr/local/bin/; done
 
 load: download load_admins load_addresses load_osm_streets load_pois
 
