@@ -10,12 +10,6 @@ ES_INDEX="munin"
 # The name of the dataset
 ES_DATASET="nl"
 
-# The name of the image
-ES_IMAGE="elasticsearch:2"
-
-# The name of the container
-ES_NAME="mimir_es"
-
 # The departement (French administrative regions) for BANO
 # Base d'Adresses Nationale Ouverte data.gouv.fr
 BANO_REGION="75 77 78 92 93 94 95"

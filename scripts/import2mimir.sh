@@ -72,10 +72,9 @@ check_requirements()
 {
     log_info "Checking requirements"
 
-    # Check that you have wget, unzip, docker
+    # Check that you have wget, unzip
     command -v wget > /dev/null 2>&1  || { log_error "wget not found. You need to install wget."; return 1; }
     command -v unzip > /dev/null 2>&1  || { log_error "unzip not found. You need to install unzip"; return 1; }
-    command -v docker > /dev/null 2>&1  || { log_error "docker not found. You need to install docker"; return 1; }
 
     # Check that you have cosmogony
     # So we need to check that we have the COSMO_DIR variable set, and then that the project
@@ -125,24 +124,6 @@ check_arguments()
     [[ -z "$ES_DATASET" && "${ES_DATASET+xxx}" = "xxx" ]] &&
     { log_error "The variable \$ES_DATASET is set but empty. Make sure it is set in the configuration file."; usage; return 1; }
 
-    # Check that the variable $ES_IMAGE is set and non-empty
-    [[ -z "${ES_IMAGE+xxx}" ]] &&
-    { log_error "The variable \$ES_IMAGE is not set. Make sure it is set in the configuration file."; usage; return 1; }
-    [[ -z "$ES_IMAGE" && "${ES_IMAGE+xxx}" = "xxx" ]] &&
-    { log_error "The variable \$ES_IMAGE is set but empty. Make sure it is set in the configuration file."; usage; return 1; }
-
-    # Check that the variable $ES_NAME is set and non-empty
-    [[ -z "${ES_NAME+xxx}" ]] &&
-    { log_error "The variable \$ES_NAME is not set. Make sure it is set in the configuration file."; usage; return 1; }
-    [[ -z "$ES_NAME" && "${ES_NAME+xxx}" = "xxx" ]] &&
-    { log_error "The variable \$ES_NAME is set but empty. Make sure it is set in the configuration file."; usage; return 1; }
-
-    # Check that the variable $ES_NAME is set and non-empty
-    [[ -z "${ES_NAME+xxx}" ]] &&
-    { log_error "The variable \$ES_NAME is not set. Make sure it is set in the configuration file."; usage; return 1; }
-    [[ -z "$ES_NAME" && "${ES_NAME+xxx}" = "xxx" ]] &&
-    { log_error "The variable \$ES_NAME is set but empty. Make sure it is set in the configuration file."; usage; return 1; }
-
     return 0
 }
 
@@ -174,22 +155,6 @@ search_in()
   done
   IFS=$OIFS
   return 0
-}
-
-# This is a violent function... It tears the existing docker named ${ES_NAME}
-restart_docker_es() {
-  log_info "Checking docker ${ES_NAME}"
-  local DOCKER_NAMES=`docker ps --all --format '{{.Names}}'`
-  if [[ ${DOCKER_NAMES} =~ ${ES_NAME} ]]; then
-    log_info "docker container "${ES_NAME}" is running"
-    docker stop ${ES_NAME} > /dev/null 2> /dev/null
-    log_info "docker container "${ES_NAME}" stopped"
-    docker rm ${ES_NAME} > /dev/null 2> /dev/null
-    log_info "docker container "${ES_NAME}" removed"
-  fi
-  log_info "Starting docker container: ${ES_NAME}"
-  docker run -d --name ${ES_NAME} -p ${ES_PORT}:${ES_PORT} ${ES_IMAGE} > /dev/null 2> /dev/null
-  return $?
 }
 
 # Pre requisite: DATA_DIR exists.
@@ -346,9 +311,6 @@ check_requirements
 
 check_environment
 [[ $? != 0 ]] && { log_error "Invalid environment. Aborting"; exit 1; }
-
-restart_docker_es 9200
-[[ $? != 0 ]] && { log_error "Could not restart the elastic search docker. Aborting"; exit 1; }
 
 # The order in which the import are done into mimir is important!
 # First we generate the admin regions with cosmogony
