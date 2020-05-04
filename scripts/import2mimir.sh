@@ -182,9 +182,9 @@ restart_docker_es() {
   local DOCKER_NAMES=`docker ps --all --format '{{.Names}}'`
   if [[ ${DOCKER_NAMES} =~ ${ES_NAME} ]]; then
     log_info "docker container "${ES_NAME}" is running"
-    docker stop es > /dev/null 2> /dev/null
+    docker stop ${ES_NAME} > /dev/null 2> /dev/null
     log_info "docker container "${ES_NAME}" stopped"
-    docker rm es > /dev/null 2> /dev/null
+    docker rm ${ES_NAME} > /dev/null 2> /dev/null
     log_info "docker container "${ES_NAME}" removed"
   fi
   log_info "Starting docker container: ${ES_NAME}"
