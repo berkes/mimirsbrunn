@@ -52,7 +52,7 @@ log_info()
 {
     DATE=`date -R`
     if ! $QUIET; then
-        echo -e "\e[90m$DATE | $1\e[0m"
+        echo -e "\e[30;37m$DATE | $1\e[0m"
     fi
     echo "INFO  | $DATE | $1" >> $LOG_FILE
 }
