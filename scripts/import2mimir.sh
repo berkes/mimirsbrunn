@@ -189,6 +189,26 @@ download_osm() {
   return 0
 }
 
+import_oa() {
+  log_info "Importing OA into mimir"
+
+  local INPUT="${DATA_DIR}/oa/$(basename ${OA_DOWNLOAD_URL})"
+  [[ -f "${INPUT}" ]] || { log_error "openaddress2mimir cannot run: Missing input ${INPUT}"; return 1; }
+
+  "${OSM2MIMIR}" ${OSM_POI_CONFIG_OPT} --input "${INPUT}" -c "http://localhost:${ES_PORT}/${ES_INDEX}" > /dev/null 2> /dev/null
+  [[ $? != 0 ]] && { log_error "Could not import OA CSV data for ${INPUT} into mimir. Aborting"; return 1; }
+  return 0
+}
+
+download_oa() {
+  log_info "Downloading oa from ${OA_DOWNLOAD_URL}"
+  mkdir -p "$DATA_DIR/oa"
+  local OA_FILE=$(basename ${OA_DOWNLOAD_URL})
+  wget --quiet --output-document="${DATA_DIR}/oa/${OA_FILE}" "${OA_DOWNLOAD_URL}"
+  [[ $? != 0 ]] && { log_error "Could not download OA CSV data from ${OA_DOWNLOAD_URL}. Aborting"; return 1; }
+  return 0
+}
+
 # Pre requisite: DATA_DIR exists.
 import_ntfs() {
   log_info "Importing ntfs into mimir"
@@ -205,46 +225,13 @@ download_ntfs() {
   [[ $? != 0 ]] && { log_error "Could not download NTFS CSV data for ${NTFS_REGION}. Aborting"; return 1; }
   NTFS_URL=`cat ${DATA_DIR}/${NTFS_REGION}.csv | grep NTFS | cut -d';' -f 5`
   [[ $? != 0 ]] && { log_error "Could not find NTFS URL. Aborting"; return 1; }
-  wget --quiet --content-disposition --directory-prefix="${DATA_DIR}/ntfs" "${NTFS_URL}"
+
+  wget --quiet --content-disposition --output-document="${DATA_DIR}/ntfs/ntfs.zip" "${NTFS_URL}"
   [[ $? != 0 ]] && { log_error "Could not download NTFS from ${NTFS_URL}. Aborting"; return 1; }
   rm "${DATA_DIR}/${NTFS_REGION}.csv"
-  unzip -d "${DATA_DIR}/ntfs" "${DATA_DIR}/ntfs/*.zip"
+  unzip -o -d "${DATA_DIR}/ntfs" "${DATA_DIR}/ntfs/ntfs.zip"
   [[ $? != 0 ]] && { log_error "Could not unzip NTFS from ${DATA_DIR}/ntfs. Aborting"; return 1; }
   return 0
-}
-
-# Pre requisite: DATA_DIR exists.
-import_bano() {
-  log_info "Importing bano into mimir"
-  local BANO2MIMIR="${MIMIR_DIR}/target/release/bano2mimir"
-  command -v "${BANO2MIMIR}" > /dev/null 2>&1  || { log_error "bano2mimir not found in ${MIMIR_DIR}. Aborting"; return 1; }
-  "${BANO2MIMIR}" --connection-string "http://localhost:${ES_PORT}/${ES_INDEX}" --input "${DATA_DIR}/bano" > /dev/null 2> /dev/null
-  [[ $? != 0 ]] && { log_error "Could not import bano from ${DATA_DIR}/bano into mimir. Aborting"; return 1; }
-  return 0
-}
-
-# Pre requisite: DATA_DIR exists.
-download_bano() {
-  log_info "Downloading bano"
-  mkdir -p "$DATA_DIR/bano"
-  for REGION in ${BANO_REGION}
-  do
-    download_bano_region_csv "${REGION}" "${DATA_DIR}/bano"
-    [[ $? != 0 ]] && { log_error "Could not download CSV data for ${REGION}. Aborting"; return 1; }
-  done
-  return 0
-}
-
-# $1: region number (aka department)
-# $2: data directory (where the csv will be stored)
-# Pre requisite: DATA_DIR exists.
-download_bano_region_csv() {
-  local DEPT=$(printf %02d $1)
-  local FILENAME="bano-${DEPT}.csv"
-  local DOWNLOAD_DIR="${2}"
-  log_info "Downloading ${FILENAME}"
-  wget http://bano.openstreetmap.fr/data/${FILENAME} --timestamping --directory-prefix=${DOWNLOAD_DIR} -c --no-verbose --quiet
-  return $?
 }
 
 ########################### START ############################
@@ -289,16 +276,16 @@ check_environment
 
 # The order in which the import are done into mimir is important!
 # First we generate the admin regions with cosmogony
-# Second we import the addresses with bano
+# Second we import the addresses with openaddresses
 
 download_osm
 [[ $? != 0 ]] && { log_error "Could not download osm. Aborting"; exit 1; }
 
-download_bano
-[[ $? != 0 ]] && { log_error "Could not download bano. Aborting"; exit 1; }
-
 download_ntfs
 [[ $? != 0 ]] && { log_error "Could not download ntfs. Aborting"; exit 1; }
+
+download_oa
+[[ $? != 0 ]] && { log_error "Could not download openaddresses. Aborting"; exit 1; }
 
 generate_cosmogony
 [[ $? != 0 ]] && { log_error "Could not generate cosmogony. Aborting"; exit 1; }
@@ -306,8 +293,8 @@ generate_cosmogony
 import_cosmogony
 [[ $? != 0 ]] && { log_error "Could not import cosmogony into mimir. Aborting"; exit 1; }
 
-import_bano
-[[ $? != 0 ]] && { log_error "Could not import bano into mimir. Aborting"; exit 1; }
+import_oa
+[[ $? != 0 ]] && { log_error "Could not import openaddresses into mimir. Aborting"; exit 1; }
 
 import_osm
 [[ $? != 0 ]] && { log_error "Could not import osm into mimir. Aborting"; exit 1; }

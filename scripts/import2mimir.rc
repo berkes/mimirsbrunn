@@ -10,9 +10,8 @@ ES_INDEX="munin"
 # The name of the dataset
 ES_DATASET="nl"
 
-# The departement (French administrative regions) for BANO
-# Base d'Adresses Nationale Ouverte data.gouv.fr
-BANO_REGION="75 77 78 92 93 94 95"
+# OpenAddress url to download and import
+OA_DOWNLOAD_URL="https://data.openaddresses.io/runs/767853/nl/countrywide.zip"
 
 # NTFS Region to download
 NTFS_REGION="nl"
