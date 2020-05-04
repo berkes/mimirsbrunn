@@ -24,7 +24,7 @@ BANO_REGION="75 77 78 92 93 94 95"
 NTFS_REGION="fr-idf"
 
 # OSM Region
-OSM_REGION="ile-de-france"
+OSM_REGION="europe/france/ile-de-france"
 
 # Base directory for cosmogony
 COSMO_DIR=""
