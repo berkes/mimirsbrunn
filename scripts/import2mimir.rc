@@ -1,5 +1,5 @@
 # The directory in which data is stored
-DATA_DIR="data"
+DATA_DIR="/mnt/sda/OSM/mimir"
 
 # The port number for elasticsearch
 ES_PORT=9200
@@ -8,29 +8,29 @@ ES_PORT=9200
 ES_INDEX="munin"
 
 # The name of the dataset
-ES_DATASET="fr"
+ES_DATASET="nl"
 
 # The name of the image
 ES_IMAGE="elasticsearch:2"
 
 # The name of the container
-ES_NAME="es"
+ES_NAME="mimir_es"
 
 # The departement (French administrative regions) for BANO
 # Base d'Adresses Nationale Ouverte data.gouv.fr
 BANO_REGION="75 77 78 92 93 94 95"
 
 # NTFS Region to download
-NTFS_REGION="fr-idf"
+NTFS_REGION="nl"
 
 # OSM Download
-OSM_DOWNLOAD_URL="https://download.geofabrik.de/europe/france/ile-de-france-latest.osm.pbf"
+OSM_DOWNLOAD_URL="https://download.geofabrik.de/europe/netherlands/gelderland-latest.osm.pbf"
 
 # OSM Region
-OSM_REGION="france-ile-de-france"
+OSM_REGION="netherlands-gelderland"
 
 # OSM POI config
 OSM_POI_CONFIG="./poi_config.json"
 
 # Base directory for cosmogony
-COSMO_DIR=""
+COSMO_DIR="/home/ber/Documenten/OOT_openopeningstijden/libs/cosmogony"
