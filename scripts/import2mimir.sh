@@ -14,7 +14,6 @@ LOG_FILE="${APPLICATION}-${EXECUTION_DATE}.log"
 CONFIG_FILE="${APPLICATION}.rc"
 QUIET=false
 DEFAULT_TASK="none"
-readonly MIMIR_DIR="$(cd "${SCRIPT_DIR}/.." >/dev/null 2>&1 && pwd)"
 
 version()
 {
@@ -76,28 +75,10 @@ check_requirements()
     command -v wget > /dev/null 2>&1  || { log_error "wget not found. You need to install wget."; return 1; }
     command -v unzip > /dev/null 2>&1  || { log_error "unzip not found. You need to install unzip"; return 1; }
 
-    # Check that you have cosmogony
-    # So we need to check that we have the COSMO_DIR variable set, and then that the project
-    # has been built in release mode.
-    [[ -z "${COSMO_DIR+xxx}" ]] &&
-    { log_error "The variable \$COSMO_DIR is not set. Make sure it is set in the configuration file (${CONFIG_FILE}).";
-      log_error "COSMO_DIR should point to the root of the cosmogony project, that you can find at";
-      log_error "https://github.com/osm-without-borders/cosmogony.";
-      usage; return 1; }
-    [[ -z "$COSMO_DIR" && "${COSMO_DIR+xxx}" = "xxx" ]] &&
-    { log_error "The variable \$COSMO_DIR is set but empty. Make sure it is set in the configuration file (${CONFIG_FILE})."
-      log_error "COSMO_DIR should point to the root of the cosmogony project, that you can find at";
-      log_error "https://github.com/osm-without-borders/cosmogony.";
-      log_error "Build the project in release mode following the documentation of the project.";
-      usage; return 1; }
-
-    local COSMOGONY="${COSMO_DIR}/target/release/cosmogony"
-    command -v "${COSMOGONY}" > /dev/null 2>&1  || { log_error "cosmogony not found in ${COSMO_DIR}.";
-    log_error "You need to get cosmogony from https://github.com/osm-without-borders/cosmogony";
-    log_error "and build it with 'cargo build --release'"; return 1; }
-
-    local OSM2MIMIR="${MIMIR_DIR}/target/release/osm2mimir"
-    command -v "${OSM2MIMIR}" > /dev/null 2>&1  || { log_error "osm2mimir not found in ${MIMIR_DIR}. You need to get osm2mimir from https://github.com/CanalTP/mimirsbrunn and build it with 'cargo build --release'"; return 1; }
+    command -v "${COSMOGONY}" > /dev/null 2>&1  || { log_error "cosmogony not found."; return 1; }
+    command -v "${OSM2MIMIR}" > /dev/null 2>&1  || { log_error "osm2mimir not found."; return 1; }
+    command -v "${COSMOGONY2MIMIR}" > /dev/null 2>&1  || { log_error "cosmogony2mimir not found"; return 1; }
+    command -v "${NTFS2MIMIR}" > /dev/null 2>&1  || { log_error "ntfs2mimir not found."; return 1; }
 
     return 0
 }
@@ -160,13 +141,13 @@ search_in()
 # Pre requisite: DATA_DIR exists.
 generate_cosmogony() {
   log_info "Generating cosmogony"
-  local COSMOGONY="${COSMO_DIR}/target/release/cosmogony"
   mkdir -p "$DATA_DIR/cosmogony"
-  command -v "${COSMOGONY}" > /dev/null 2>&1  || { log_error "cosmogony not found in ${COSMO_DIR}. Aborting"; return 1; }
+
   local INPUT="${DATA_DIR}/osm/${OSM_REGION}-latest.osm.pbf"
   local OUTPUT="${DATA_DIR}/cosmogony/${OSM_REGION}.json.gz"
+
   [[ -f "${INPUT}" ]] || { log_error "cosmogony cannot run: Missing input ${INPUT}"; return 1; }
-  "${COSMOGONY}" --country-code FR --input "${INPUT}" --output "${OUTPUT}" > /dev/null 2> /dev/null
+  "${COSMOGONY}" --country-code NL --input "${INPUT}" --output "${OUTPUT}" > /dev/null 2> /dev/null
   [[ $? != 0 ]] && { log_error "Could not generate cosmogony data for ${OSM_REGION}. Aborting"; return 1; }
   return 0
 }
@@ -174,8 +155,6 @@ generate_cosmogony() {
 # Pre requisite: DATA_DIR exists.
 import_cosmogony() {
   log_info "Importing cosmogony into mimir"
-  local COSMOGONY2MIMIR="${MIMIR_DIR}/target/release/cosmogony2mimir"
-  command -v "${COSMOGONY2MIMIR}" > /dev/null 2>&1  || { log_error "cosmogony2mimir not found in ${MIMIR_DIR}. Aborting"; return 1; }
   local INPUT="${DATA_DIR}/cosmogony/${OSM_REGION}.json.gz"
   [[ -f "${INPUT}" ]] || { log_error "cosmogony2mimir cannot run: Missing input ${INPUT}"; return 1; }
 
@@ -187,8 +166,6 @@ import_cosmogony() {
 # Pre requisite: DATA_DIR exists.
 import_osm() {
   log_info "Importing osm into mimir"
-  local OSM2MIMIR="${MIMIR_DIR}/target/release/osm2mimir"
-  command -v "${OSM2MIMIR}" > /dev/null 2>&1  || { log_error "osm2mimir not found in ${MIMIR_DIR}. Aborting"; return 1; }
   local INPUT="${DATA_DIR}/osm/${OSM_REGION}-latest.osm.pbf"
   [[ -f "${INPUT}" ]] || { log_error "osm2mimir cannot run: Missing input ${INPUT}"; return 1; }
 
@@ -215,8 +192,6 @@ download_osm() {
 # Pre requisite: DATA_DIR exists.
 import_ntfs() {
   log_info "Importing ntfs into mimir"
-  local NTFS2MIMIR="${MIMIR_DIR}/target/release/ntfs2mimir"
-  command -v "${NTFS2MIMIR}" > /dev/null 2>&1  || { log_error "osm2mimir not found in ${MIMIR_DIR}. Aborting"; return 1; }
   "${NTFS2MIMIR}" --input "${DATA_DIR}/ntfs" -c "http://localhost:${ES_PORT}/${ES_INDEX}" > /dev/null 2> /dev/null
   [[ $? != 0 ]] && { log_error "Could not import NTFS data from ${DATA_DIR}/ntfs into mimir. Aborting"; return 1; }
   return 0

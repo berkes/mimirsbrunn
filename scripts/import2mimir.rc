@@ -26,5 +26,8 @@ OSM_REGION="netherlands-gelderland"
 # OSM POI config
 OSM_POI_CONFIG="./poi_config.json"
 
-# Base directory for cosmogony
-COSMO_DIR="/home/ber/Documenten/OOT_openopeningstijden/libs/cosmogony"
+# Binaries. Ensure they are in the PATH
+COSMOGONY="cosmogony"
+OSM2MIMIR="osm2mimir"
+COSMOGONY2MIMIR="cosmogony2mimir"
+NTFS2MIMIR="ntfs2mimir"
