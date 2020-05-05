@@ -283,8 +283,8 @@ check_environment
 download_osm
 [[ $? != 0 ]] && { log_error "Could not download osm. Aborting"; exit 1; }
 
-download_ntfs
-[[ $? != 0 ]] && { log_error "Could not download ntfs. Aborting"; exit 1; }
+# download_ntfs
+# [[ $? != 0 ]] && { log_error "Could not download ntfs. Aborting"; exit 1; }
 
 download_oa
 [[ $? != 0 ]] && { log_error "Could not download openaddresses. Aborting"; exit 1; }
@@ -301,5 +301,5 @@ import_oa
 import_osm
 [[ $? != 0 ]] && { log_error "Could not import osm into mimir. Aborting"; exit 1; }
 
-import_ntfs
-[[ $? != 0 ]] && { log_error "Could not import ntfs into mimir. Aborting"; exit 1; }
+# import_ntfs
+# [[ $? != 0 ]] && { log_error "Could not import ntfs into mimir. Aborting"; exit 1; }
