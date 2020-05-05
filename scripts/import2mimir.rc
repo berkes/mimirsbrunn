@@ -1,5 +1,5 @@
 # The directory in which data is stored
-DATA_DIR="/mnt/sda/OSM/mimir"
+DATA_DIR="/var/cache/mimirsbrunn"
 
 # The port number for elasticsearch
 ES_PORT=9200
@@ -23,10 +23,11 @@ OSM_DOWNLOAD_URL="https://download.geofabrik.de/europe/netherlands/gelderland-la
 OSM_REGION="netherlands-gelderland"
 
 # OSM POI config
-OSM_POI_CONFIG="./poi_config.json"
+OSM_POI_CONFIG="/etc/mimirsbrunn/poi_config.json"
 
 # Binaries. Ensure they are in the PATH
 COSMOGONY="cosmogony"
 OSM2MIMIR="osm2mimir"
+OPENADDRESSES2MIMIR="openaddresses2mimir"
 COSMOGONY2MIMIR="cosmogony2mimir"
 NTFS2MIMIR="ntfs2mimir"
