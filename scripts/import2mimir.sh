@@ -175,7 +175,7 @@ import_osm() {
     local OSM_POI_CONFIG_OPT=""
   fi
 
-  "${OSM2MIMIR}" ${OSM_POI_CONFIG_OPT} --import-way --import-poi --input "${DATA_DIR}/osm/${OSM_REGION}-latest.osm.pbf" -c "http://localhost:${ES_PORT}/${ES_INDEX}" > /dev/null 2> /dev/null
+  "${OSM2MIMIR}" ${OSM_POI_CONFIG_OPT} --import-way --import-poi --input "${DATA_DIR}/osm/${OSM_REGION}-latest.osm.pbf" -c "http://localhost:${ES_PORT}/${ES_INDEX}"
   [[ $? != 0 ]] && { log_error "Could not import OSM PBF data for ${OSM_REGION} into mimir. Aborting"; return 1; }
   return 0
 }
@@ -192,10 +192,9 @@ download_osm() {
 import_oa() {
   log_info "Importing OA into mimir"
 
-  local INPUT="${DATA_DIR}/oa/$(basename ${OA_DOWNLOAD_URL})"
-  [[ -f "${INPUT}" ]] || { log_error "openaddress2mimir cannot run: Missing input ${INPUT}"; return 1; }
-
-  "${OSM2MIMIR}" ${OSM_POI_CONFIG_OPT} --input "${INPUT}" -c "http://localhost:${ES_PORT}/${ES_INDEX}" > /dev/null 2> /dev/null
+  local INPUT="${DATA_DIR}/oa/**/*\.csv"
+  ## openaddresses2mimir can only read mulitple files when piped to it. hence we pipe them
+  cat $INPUT | ${OPENADDRESSES2MIMIR} -c "http://localhost:${ES_PORT}/${ES_INDEX}" # > /dev/null 2> /dev/null
   [[ $? != 0 ]] && { log_error "Could not import OA CSV data for ${INPUT} into mimir. Aborting"; return 1; }
   return 0
 }
@@ -203,9 +202,12 @@ import_oa() {
 download_oa() {
   log_info "Downloading oa from ${OA_DOWNLOAD_URL}"
   mkdir -p "$DATA_DIR/oa"
-  local OA_FILE=$(basename ${OA_DOWNLOAD_URL})
-  wget --quiet --output-document="${DATA_DIR}/oa/${OA_FILE}" "${OA_DOWNLOAD_URL}"
+  local OA_FILE="${DATA_DIR}/oa/$(basename ${OA_DOWNLOAD_URL})"
+  wget --quiet --output-document="${OA_FILE}" "${OA_DOWNLOAD_URL}"
   [[ $? != 0 ]] && { log_error "Could not download OA CSV data from ${OA_DOWNLOAD_URL}. Aborting"; return 1; }
+  unzip -o -d "${DATA_DIR}/oa/" "${OA_FILE}"
+  [[ $? != 0 ]] && { log_error "Could not extract OA CSV data from ${OA_FILE}. Aborting"; return 1; }
+
   return 0
 }
 
