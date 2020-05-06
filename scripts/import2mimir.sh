@@ -3,6 +3,10 @@
 set -o errexit
 set -o nounset
 
+if ${DEBUG:-false}; then
+  set -x
+fi
+
 readonly SCRIPT_SRC="$(dirname "${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}")"
 readonly SCRIPT_DIR="$(cd "${SCRIPT_SRC}" >/dev/null 2>&1 && pwd)"
 readonly SCRIPT_NAME=$(basename "$0")
@@ -138,6 +142,34 @@ search_in()
   return 0
 }
 
+##
+# Run a x2mimir command. E.g.
+#  run osm2mimir planet.pbf --import-poi --import-way --poi-config poi.json
+run()
+{
+
+  local command=${1}
+  local input=${2}
+  local extra_args=${@:3}
+
+  [[ -f "${input}" ]] || { log_error "${command} cannot run: Missing input ${input}"; return 1; }
+
+  ${command} --connection-string "http://localhost:${ES_PORT}/${ES_INDEX}" --dataset=${ES_DATASET} --input "${input}" ${extra_args}
+}
+
+download()
+{
+  local url=${1}
+  local output=${2}
+  local extra_args=${@:3}
+  if [[ -f ${output} ]]; then
+    log_info "Local file ${output} exist. Skipping download from ${url}"
+  else
+    log_info "Downloading ${output} from ${url}"
+    wget --output-document=${output} ${url} ${extra_args}
+  fi
+}
+
 # Pre requisite: DATA_DIR exists.
 generate_cosmogony() {
   log_info "Generating cosmogony"
@@ -146,8 +178,8 @@ generate_cosmogony() {
   local INPUT="${DATA_DIR}/osm/${OSM_REGION}-latest.osm.pbf"
   local OUTPUT="${DATA_DIR}/cosmogony/${OSM_REGION}.json.gz"
 
-  [[ -f "${INPUT}" ]] || { log_error "cosmogony cannot run: Missing input ${INPUT}"; return 1; }
-  "${COSMOGONY}" --country-code NL --input "${INPUT}" --output "${OUTPUT}" > /dev/null 2> /dev/null
+  # We don't run this with run() since the signature is very different
+  "${COSMOGONY}" --country-code NL --input "${INPUT}" --output "${OUTPUT}"
   [[ $? != 0 ]] && { log_error "Could not generate cosmogony data for ${OSM_REGION}. Aborting"; return 1; }
   return 0
 }
@@ -156,9 +188,8 @@ generate_cosmogony() {
 import_cosmogony() {
   log_info "Importing cosmogony into mimir"
   local INPUT="${DATA_DIR}/cosmogony/${OSM_REGION}.json.gz"
-  [[ -f "${INPUT}" ]] || { log_error "cosmogony2mimir cannot run: Missing input ${INPUT}"; return 1; }
 
-  "${COSMOGONY2MIMIR}" --connection-string "http://localhost:${ES_PORT}/${ES_INDEX}" --input "${INPUT}" > /dev/null 2> /dev/null
+  run "${COSMOGONY2MIMIR}" "${INPUT}"
   [[ $? != 0 ]] && { log_error "Could not import cosmogony data from ${DATA_DIR}/cosmogony/${OSM_REGION}.json.gz into mimir. Aborting"; return 1; }
   return 0
 }
@@ -175,36 +206,30 @@ import_osm() {
     local OSM_POI_CONFIG_OPT=""
   fi
 
-  "${OSM2MIMIR}" ${OSM_POI_CONFIG_OPT} --import-way --import-poi --input "${DATA_DIR}/osm/${OSM_REGION}-latest.osm.pbf" -c "http://localhost:${ES_PORT}/${ES_INDEX}"
+  run "${OSM2MIMIR}" "${DATA_DIR}/osm/${OSM_REGION}-latest.osm.pbf" ${OSM_POI_CONFIG_OPT} --import-way --import-poi
   [[ $? != 0 ]] && { log_error "Could not import OSM PBF data for ${OSM_REGION} into mimir. Aborting"; return 1; }
   return 0
 }
 
 # Pre requisite: DATA_DIR exists.
 download_osm() {
-  log_info "Downloading osm into mimir for ${OSM_REGION}"
   mkdir -p "$DATA_DIR/osm"
-  wget --quiet --output-document="${DATA_DIR}/osm/${OSM_REGION}-latest.osm.pbf" "${OSM_DOWNLOAD_URL}"
-  [[ $? != 0 ]] && { log_error "Could not download OSM PBF data for ${OSM_REGION}. Aborting"; return 1; }
-  return 0
+  download "${OSM_DOWNLOAD_URL}" "${DATA_DIR}/osm/${OSM_REGION}-latest.osm.pbf"
 }
 
 import_oa() {
   log_info "Importing OA into mimir"
-
   local INPUT="${DATA_DIR}/oa/**/*\.csv"
-  ## openaddresses2mimir can only read mulitple files when piped to it. hence we pipe them
-  cat $INPUT | ${OPENADDRESSES2MIMIR} -c "http://localhost:${ES_PORT}/${ES_INDEX}" # > /dev/null 2> /dev/null
+  run ${OPENADDRESSES2MIMIR} ${INPUT}
   [[ $? != 0 ]] && { log_error "Could not import OA CSV data for ${INPUT} into mimir. Aborting"; return 1; }
   return 0
 }
 
 download_oa() {
-  log_info "Downloading oa from ${OA_DOWNLOAD_URL}"
   mkdir -p "$DATA_DIR/oa"
   local OA_FILE="${DATA_DIR}/oa/$(basename ${OA_DOWNLOAD_URL})"
-  wget --quiet --output-document="${OA_FILE}" "${OA_DOWNLOAD_URL}"
-  [[ $? != 0 ]] && { log_error "Could not download OA CSV data from ${OA_DOWNLOAD_URL}. Aborting"; return 1; }
+  download "${OSM_DOWNLOAD_URL}" "${OA_FILE}"
+
   unzip -o -d "${DATA_DIR}/oa/" "${OA_FILE}"
   [[ $? != 0 ]] && { log_error "Could not extract OA CSV data from ${OA_FILE}. Aborting"; return 1; }
 
@@ -214,22 +239,20 @@ download_oa() {
 # Pre requisite: DATA_DIR exists.
 import_ntfs() {
   log_info "Importing ntfs into mimir"
-  "${NTFS2MIMIR}" --input "${DATA_DIR}/ntfs" -c "http://localhost:${ES_PORT}/${ES_INDEX}" > /dev/null 2> /dev/null
+  run "${NTFS2MIMIR}" "${DATA_DIR}/ntfs"
   [[ $? != 0 ]] && { log_error "Could not import NTFS data from ${DATA_DIR}/ntfs into mimir. Aborting"; return 1; }
   return 0
 }
 
 # Pre requisite: DATA_DIR exists.
 download_ntfs() {
-  log_info "Downloading ntfs for ${NTFS_REGION}"
   mkdir -p "$DATA_DIR/ntfs"
-  wget --quiet -O "${DATA_DIR}/${NTFS_REGION}.csv" "https://navitia.opendatasoft.com/explore/dataset/${NTFS_REGION}/download/?format=csv"
+  download "https://navitia.opendatasoft.com/explore/dataset/${NTFS_REGION}/download/?format=csv" "${DATA_DIR}/${NTFS_REGION}.csv"
   [[ $? != 0 ]] && { log_error "Could not download NTFS CSV data for ${NTFS_REGION}. Aborting"; return 1; }
   NTFS_URL=`cat ${DATA_DIR}/${NTFS_REGION}.csv | grep NTFS | cut -d';' -f 5`
   [[ $? != 0 ]] && { log_error "Could not find NTFS URL. Aborting"; return 1; }
 
-  wget --quiet --content-disposition --output-document="${DATA_DIR}/ntfs/ntfs.zip" "${NTFS_URL}"
-  [[ $? != 0 ]] && { log_error "Could not download NTFS from ${NTFS_URL}. Aborting"; return 1; }
+  download "${NTFS_URL}" "${DATA_DIR}/ntfs/ntfs.zip" --content-disposition
   rm "${DATA_DIR}/${NTFS_REGION}.csv"
   unzip -o -d "${DATA_DIR}/ntfs" "${DATA_DIR}/ntfs/ntfs.zip"
   [[ $? != 0 ]] && { log_error "Could not unzip NTFS from ${DATA_DIR}/ntfs. Aborting"; return 1; }
