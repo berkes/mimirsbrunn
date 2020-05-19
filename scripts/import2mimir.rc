@@ -17,7 +17,7 @@ OA_DOWNLOAD_URL="https://data.openaddresses.io/runs/767853/nl/countrywide.zip"
 NTFS_REGION="nl"
 
 # OSM Download
-OSM_DOWNLOAD_URL="https://download.geofabrik.de/europe/netherlands/gelderland-latest.osm.pbf"
+OSM_DOWNLOAD_URL="https://download.geofabrik.de/europe/netherlands-latest.osm.pbf"
 
 # OSM Region
 OSM_REGION="netherlands-gelderland"
