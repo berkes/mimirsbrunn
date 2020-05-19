@@ -1,0 +1,345 @@
+openapi: 3.0.0
+info:
+  description: 'Mimirsbrunn (also called Mimir) is an independent geocoding and reverse-geocoding system written in Rust, and built upon Elasticsearch. It can handle addresses, streets, points-of-interest (POI), administrative regions or public transport stops. Mimirsbrunn exposes a REST JSON api through bragi.'
+  version: 1.15.0
+  title: Mimirsbrunn REST API
+  contact:
+    url: 'https://github.com/CanalTP/mimirsbrunn'
+  license:
+    name: AGPL 3
+    url: 'https://github.com/CanalTP/mimirsbrunn/blob/master/LICENSE'
+servers:
+  - url: 'http://localhost:4000'
+    description: Local development version
+paths:
+  /autocomplete:
+    get:
+      summary: Geocoding free text search
+      description: Free text search.
+      operationId: autocomplete
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Query string. URL encoded string
+          schema:
+            type: string
+        - name: lat
+          in: query
+          description: Latitude Coordinate for proximity weighting. Requires `lat` to be defined too. Prefers results closer to the point described by the proximity.
+          schema:
+            type: string
+        - name: lon
+          in: query
+          description: Longitude Coordinate for proximity weighting. Requires `lon` to be defined too. Prefers results closer to the point described by the proximity.
+          schema:
+            type: string
+        - name: types
+          in: query
+          description: 'Limit to defined types of results only: `public_transport:stop_area`, `city`, `zone`, `house`, `poi` or `street`'
+          schema:
+            type: array
+            items:
+              type: string
+        - name: lang
+          in: query
+          description: Search in localised fields for this language.
+          schema:
+            type: string
+            default: null
+        - name: zone_types
+          in: query
+          description: 'Limits to defined zone_types only. Requires `type[]=zone` to be set. For example `village`, `city`, `state` or `country`.'
+          schema:
+            type: array
+            items:
+              type: string
+        - name: poi_types
+          in: query
+          description: 'Limits to defined poi_types only. Requires `type[]=poi` to be set. POI types depend on configuration of imported POIs. Uses the ID. E.g. `poi_type:amenity:police`.'
+          schema:
+            type: array
+            items:
+              type: string
+        - name: all_data
+          in: query
+          description: Force usage of all datasets
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          description: Amount of items to return at most
+          schema:
+            type: integer
+            default: 10
+            minimum: 0
+            maximum: 18446744073709552000
+        - name: offset
+          in: query
+          description: Offset in result set. Used for paging through results.
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            maximum: 18446744073709552000
+        - name: pt_datasets
+          in: query
+          description: Limit to certain public transport datasets
+          schema:
+            type: array
+            items:
+              type: string
+          style: deepObject
+          explode: true
+        - name: poi_datasets
+          in: query
+          description: Limit to certain POI datasets
+          schema:
+            type: array
+            items:
+              type: string
+          style: deepObject
+          explode: true
+        - name: timeout
+          in: query
+          description: Timeout in milliseconds
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            maximum: 18446744073709552000
+      responses:
+        '200':
+          description: A geocode JSON list of Features
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: 'validation error: invalid argument: failed with reason: missing field `q`'
+    post:
+      summary: Geocoding free text search within a shape
+      description: Free text search with additional shape as filter.
+      operationId: autocomplete-post
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Query string. URL encoded string
+          schema:
+            type: string
+        - name: lat
+          in: query
+          description: Latitude Coordinate for proximity weighting. Requires `lat` to be defined too. Prefers results closer to the point described by the proximity.
+          schema:
+            type: string
+        - name: lon
+          in: query
+          description: Longitude Coordinate for proximity weighting. Requires `lon` to be defined too. Prefers results closer to the point described by the proximity.
+          schema:
+            type: string
+        - name: types
+          in: query
+          description: 'Limit to defined types of results only: `public_transport:stop_area`, `city`, `zone`, `house`, `poi` or `street`'
+          schema:
+            type: array
+            items:
+              type: string
+        - name: lang
+          in: query
+          description: Search in localised fields for this language.
+          schema:
+            type: string
+            default: null
+        - name: zone_types
+          in: query
+          description: 'Limits to defined zone_types only. Requires `type[]=zone` to be set. For example `village`, `city`, `state` or `country`.'
+          schema:
+            type: array
+            items:
+              type: string
+        - name: poi_types
+          in: query
+          description: 'Limits to defined poi_types only. Requires `type[]=poi` to be set. POI types depend on configuration of imported POIs. Uses the ID. E.g. `poi_type:amenity:police`.'
+          schema:
+            type: array
+            items:
+              type: string
+        - name: all_data
+          in: query
+          description: Force usage of all datasets
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          description: Amount of items to return at most
+          schema:
+            type: integer
+            default: 10
+            minimum: 0
+            maximum: 18446744073709552000
+        - name: offset
+          in: query
+          description: Offset in result set. Used for paging through results.
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            maximum: 18446744073709552000
+        - name: pt_datasets
+          in: query
+          description: Limit to certain public transport datasets
+          schema:
+            type: array
+            items:
+              type: string
+          style: deepObject
+          explode: true
+        - name: poi_datasets
+          in: query
+          description: Limit to certain POI datasets
+          schema:
+            type: array
+            items:
+              type: string
+          style: deepObject
+          explode: true
+        - name: timeout
+          in: query
+          description: Timeout in milliseconds
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            maximum: 18446744073709552000
+      requestBody:
+        description: A geojson polygon shape form describing the bounding shape. Only elements within this shape will be included in the results.
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shape:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - Feature
+                    properties:
+                      type: object
+                    geometry:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                            - Polygon
+                        coordinates:
+                          type: array
+                          items:
+                            type: array
+                            items:
+                              type: array
+                              items:
+                                type: number
+                                description: 'lat,long of point'
+            examples:
+              simple_shape:
+                value:
+                  shape:
+                    type: Feature
+                    properties: {}
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - - - 5.84
+                            - 51.85
+                          - - 5.81
+                            - 51.83
+                          - - 5.84
+                            - 51.85
+      responses:
+        '200':
+          description: A geocode JSON list of Features
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: 'validation error: invalid argument: failed with reason: missing field `q`'
+  '/features/{id}':
+    get:
+      summary: Details of one object
+      description: Get all the details for an object.
+      operationId: features-details
+      parameters:
+        - name: id
+          required: true
+          description: 'Id of an object. Find them from the `autocomplete` endpoint. E.g. `osm:way:5013364`'
+          in: path
+          schema:
+            type: string
+        - name: all_data
+          in: query
+          description: Force usage of all datasets
+          schema:
+            type: boolean
+        - name: pt_dataset
+          in: query
+          description: Limit to a certain public transport dataset
+          schema:
+            type: string
+        - name: poi_dataset
+          in: query
+          description: Limit to certain POI dataset
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: Timeout in milliseconds
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            maximum: 18446744073709552000
+      responses:
+        '200':
+          description: A geocode JSON list of Features for this Id. Typically only one.
+          content:
+            application/json:
+              schema: {}
+  /reverse:
+    get:
+      summary: Reverse Geocoding Addresses
+      description: Get the address closest to a point described by a pair of latitude and longitude coordinates.
+      operationId: reverse
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          description: Latitude coordinate for the address to be found.
+          schema:
+            type: string
+        - name: lon
+          in: query
+          required: true
+          description: Longitude coordinate for the address to be found.
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: Timeout in milliseconds
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            maximum: 18446744073709552000
+      responses:
+        '200':
+          description: A geocode JSON list of Features for this point. Typically only one.
+          content:
+            application/json:
+              schema: {}
+externalDocs:
+  description: "About Mimirsbrunn and it's setup"
+  url: 'https://github.com/CanalTP/mimirsbrunn/tree/master/documentation'
