@@ -3,30 +3,87 @@
     {"id": "amenity:college", "name": "School"},
     {"id": "amenity:school", "name": "School"},
     {"id": "amenity:university", "name": "Universiteit"},
+
     {"id": "amenity:theatre", "name": "Theater"},
     {"id": "amenity:cinema", "name": "Bioscoop"},
+
+    {"id": "amenity:clinic", "name": "Kliniek"},
+    {"id": "amenity:dentist", "name": "Tandarts"},
+    {"id": "amenity:doctors", "name": "Arts"},
     {"id": "amenity:hospital", "name": "Ziekenhuis"},
     {"id": "amenity:pharmacy", "name": "Apotheek"},
+    {"id": "healthcare:alternative", "name": "Alternatieve geneeskunde"},
+    {"id": "shop:herbalist", "name": "Kruidenspecialist"},
+    {"id": "shop:chemist", "name": "Drogist"},
+
     {"id": "amenity:post_office", "name": "Postkantoor" },
+
     {"id": "amenity:bicycle_rental", "name": "Fietsverhuur"},
     {"id": "amenity:bicycle_parking", "name": "Fietsenstalling"},
     {"id": "amenity:parking", "name": "Parkeren"},
+
+    {"id": "amenity:fuel", "name": "Benzinestation"},
+
+    {"id": "amenity:car_rental", "name": "Autoverhuur"},
+    {"id": "amenity:car_sharing", "name": "Autodelen"},
+
+    {"id": "amenity:taxi", "name": "Taxi"},
+    {"id": "amenity:station", "name": "Station"},
+
     {"id": "amenity:police", "name": "Politie"},
     {"id": "amenity:townhall", "name": "Stadhuis"},
+
     {"id": "leisure:garden", "name": "Tuin"},
     {"id": "leisure:park", "name": "Park"},
+
+    {"id": "shop:beauty", "name": "Schoonheidssalon" },
+    {"id": "shop:butcher", "name": "Slager" },
     {"id": "shop:clothes", "name": "Kledingwinkel"},
+    {"id": "shop:cosmetics", "name": "Cosmeticawinkel"},
+    {"id": "shop:convenience", "name": "Levensmiddelenwinkel"},
     {"id": "shop:department_store", "name": "Warenhuis"},
+    {"id": "shop:florist", "name": "Bloemenwinkel"},
+    {"id": "shop:general", "name": "Algemene winkel"},
+    {"id": "shop:jewelry", "name": "Juwelier"},
+    {"id": "shop:kiosks", "name": "Kiosk"},
+    {"id": "shop:shoes", "name": "Schoenenwinkel"},
+    {"id": "shop:mobile_phone", "name": "Telefoonwinkel" },
+    {"id": "shop:mall", "name": "Winkelcentrum" },
+    {"id": "shop:photo", "name": "Fotowinkel"},
     {"id": "shop:supermarket", "name": "Supermarkt"},
-    {"id": "shop:chemist", "name": "Drogist"},
+    {"id": "shop:tabacco", "name": "Tabakswinkel" },
+    {"id": "shop:variety", "name": "Kruidenierswinkel"},
+
     {"id": "shop:bakery", "name": "Bakkerij"},
+    {"id": "shop:pastry", "name": "Banketbakkerij"},
+    {"id": "shop:confectionery", "name": "Banketbakkerij"},
+
     {"id": "amenity:bar", "name": "Café"},
+    {"id": "amenity:nightclub", "name": "Nachtclub"},
+    {"id": "amenity:pub", "name": "Pub"},
+
     {"id": "amenity:cafe", "name": "Café"},
+    {"id": "shop:coffee", "name": "Koffiewinkel"},
+
     {"id": "amenity:fast_food", "name": "Fast-food"},
     {"id": "amenity:restaurant", "name": "Restaurant"},
-    {"id": "amenity:hotel", "name": "Hotel"},
+    {"id": "amenity:food_court", "name": "Voedselplein"},
+
+    {"id": "amenity:atm", "name": "Pinautomaat"},
+    {"id": "amenity:bank", "name": "Bank"},
+    {"id": "amenity:burea_de_change", "name": "Wisselkantoor"},
+
     {"id": "amenity:guest_house", "name": "Gastenverblijf"},
+    {"id": "amenity:hostel", "name": "Hostel"},
+    {"id": "amenity:hotel", "name": "Hotel"},
+    {"id": "amenity:motel", "name": "Motel"},
+
+    {"id": "amenity:attraction", "name": "Attractie"},
+    {"id": "amenity:information", "name": "Toeristeninformatie"},
+    {"id": "amenity:monument", "name": "Monument"},
     {"id": "amenity:museum", "name": "Museum"},
+    {"id": "amenity:zoo", "name": "Dierentuin"},
+
     {"id": "office:coworking", "name": "Cowerkplek"}
   ],
   "rules": [
@@ -70,10 +127,34 @@
       "osm_tags_filters": [{"key": "amenity", "value": "bicycle_parking"}],
       "poi_type_id": "amenity:bicycle_parking"
     },
+
+    {
+      "osm_tags_filters": [{"key": "amenity", "value": "car_rental"}],
+      "poi_type_id": "amenity:car_rental"
+    },
+
     {
       "osm_tags_filters": [{"key": "amenity", "value": "parking"}],
       "poi_type_id": "amenity:parking"
     },
+    {
+      "osm_tags_filters": [{"key": "amenity", "value": "parking_space"}],
+      "poi_type_id": "amenity:parking"
+    },
+    {
+      "osm_tags_filters": [{"key": "building", "value": "parking"}],
+      "poi_type_id": "amenity:parking"
+    },
+
+    {
+      "osm_tags_filters": [{"key": "amenity", "value": "fuel"}],
+      "poi_type_id": "amenity:fuel"
+    },
+    {
+      "osm_tags_filters": [{"key": "shop", "value": "fuel"}],
+      "poi_type_id": "amenity:fuel"
+    },
+
     {
       "osm_tags_filters": [{"key": "amenity", "value": "police"}],
       "poi_type_id": "amenity:police"
@@ -107,13 +188,78 @@
       "poi_type_id": "shop:department_store"
     },
     {
+      "osm_tags_filters": [{"key": "shop", "value": "mall"}],
+      "poi_type_id": "shop:mall"
+    },
+    {
+      "osm_tags_filters": [{"key": "shop", "value": "shoes"}],
+      "poi_type_id": "shop:shoes"
+    },
+    {
+      "osm_tags_filters": [{"key": "shop", "value": "jewelry"}],
+      "poi_type_id": "shop:jewelry"
+    },
+    {
+      "osm_tags_filters": [{"key": "shop", "value": "beauty"}],
+      "poi_type_id": "shop:beauty"
+    },
+    {
+      "osm_tags_filters": [{"key": "shop", "value": "florist"}],
+      "poi_type_id": "shop:florist"
+    },
+    {
+      "osm_tags_filters": [{"key": "shop", "value": "photo"}],
+      "poi_type_id": "shop:photo"
+    },
+    {
+      "osm_tags_filters": [{"key": "shop", "value": "cosmetics"}],
+      "poi_type_id": "shop:cosmetics"
+    },
+
+    {
       "osm_tags_filters": [{"key": "shop", "value": "bakery"}],
       "poi_type_id": "shop:bakery"
     },
     {
+      "osm_tags_filters": [{"key": "industrial", "value": "bakery"}],
+      "poi_type_id": "shop:bakery"
+    },
+    {
+      "osm_tags_filters": [{"key": "shop", "value": "confectionery"}],
+      "poi_type_id": "shop:confectionery"
+    },
+    {
+      "osm_tags_filters": [{"key": "shop", "value": "pastry"}],
+      "poi_type_id": "shop:pastry"
+    },
+
+    {
       "osm_tags_filters": [{"key": "amenity", "value": "bar"}],
       "poi_type_id": "amenity:bar"
     },
+    {
+      "osm_tags_filters": [{"key": "amenity", "value": "nightclub"}],
+      "poi_type_id": "amenity:nightclub"
+    },
+    {
+      "osm_tags_filters": [{"key": "amenity", "value": "pub"}],
+      "poi_type_id": "amenity:pub"
+    },
+
+    {
+      "osm_tags_filters": [{"key": "amenity", "value": "atm"}],
+      "poi_type_id": "amenity:atm"
+    },
+    {
+      "osm_tags_filters": [{"key": "amenity", "value": "bank"}],
+      "poi_type_id": "amenity:bank"
+    },
+    {
+      "osm_tags_filters": [{"key": "amenity", "value": "burea_de_change"}],
+      "poi_type_id": "amenity:burea_de_change"
+    },
+
+
     {
       "osm_tags_filters": [{"key": "amenity", "value": "fast_food"}],
       "poi_type_id": "amenity:fast_food"
@@ -123,9 +269,19 @@
       "poi_type_id": "amenity:restaurant"
     },
     {
+      "osm_tags_filters": [{"key": "amenity", "value": "food_court"}],
+      "poi_type_id": "amenity:food_court"
+    },
+
+    {
       "osm_tags_filters": [{"key": "amenity", "value": "cafe"}],
       "poi_type_id": "amenity:cafe"
     },
+    {
+      "osm_tags_filters": [{"key": "shop", "value": "coffee"}],
+      "poi_type_id": "shop:coffee"
+    },
+
     {
       "osm_tags_filters": [{"key": "tourism", "value": "guest_house"}],
       "poi_type_id": "amenity:guest_house"
@@ -135,13 +291,56 @@
       "poi_type_id": "amenity:hotel"
     },
     {
-      "osm_tags_filters": [{"key": "tourism", "value": "hotel"}],
+      "osm_tags_filters": [{"key": "building", "value": "hotel"}],
       "poi_type_id": "amenity:hotel"
     },
+    {
+      "osm_tags_filters": [{"key": "tourism", "value": "hostel"}],
+      "poi_type_id": "amenity:hostel"
+    },
+    {
+      "osm_tags_filters": [{"key": "tourism", "value": "motel"}],
+      "poi_type_id": "amenity:motel"
+    },
+
     {
       "osm_tags_filters": [{"key": "tourism", "value": "museum"}],
       "poi_type_id": "amenity:museum"
     },
+    {
+      "osm_tags_filters": [{"key": "tourism", "value": "information"}],
+      "poi_type_id": "amenity:information"
+    },
+    {
+      "osm_tags_filters": [{"key": "tourism", "value": "attraction"}],
+      "poi_type_id": "amenity:attraction"
+    },
+    {
+      "osm_tags_filters": [{"key": "tourism", "value": "monument"}],
+      "poi_type_id": "amenity:monument"
+    },
+    {
+      "osm_tags_filters": [{"key": "tourism", "value": "zoo"}],
+      "poi_type_id": "amenity:zoo"
+    },
+
+    {
+      "osm_tags_filters": [{"key": "amenity", "value": "taxi"}],
+      "poi_type_id": "amenity:taxi"
+    },
+    {
+      "osm_tags_filters": [{"key": "amenity", "value": "bus_station"}],
+      "poi_type_id": "amenity:station"
+    },
+    {
+      "osm_tags_filters": [{"key": "railway", "value": "station"}],
+      "poi_type_id": "amenity:station"
+    },
+    {
+      "osm_tags_filters": [{"key": "public_transport", "value": "station"}],
+      "poi_type_id": "amenity:station"
+    },
+
     {
       "osm_tags_filters": [{"key": "office", "value": "coworking"}],
       "poi_type_id": "office:coworking"
