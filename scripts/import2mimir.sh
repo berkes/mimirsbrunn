@@ -171,9 +171,12 @@ generate_cosmogony() {
 
   local INPUT="${DATA_DIR}/osm/${OSM_REGION}-latest.osm.pbf"
   local OUTPUT="${DATA_DIR}/cosmogony/${OSM_REGION}.json.gz"
-
-  # We don't run this with run() since the signature is very different
-  "${COSMOGONY}" --country-code NL --input "${INPUT}" --output "${OUTPUT}"
+  if [[ -f ${OUTPUT} ]]; then
+    log_info "Local file ${OUTPUT} exist. Skipping recreation from ${INPUT}"
+  else
+    # We don't run this with run() since the signature is very different
+    "${COSMOGONY}" --country-code NL --input "${INPUT}" --output "${OUTPUT}"
+  fi
   [[ $? != 0 ]] && { log_error "Could not generate cosmogony data for ${OSM_REGION}. Aborting"; return 1; }
   return 0
 }
