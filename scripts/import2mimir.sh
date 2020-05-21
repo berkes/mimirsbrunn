@@ -91,17 +91,11 @@ check_requirements()
 check_arguments()
 {
     log_info "Checking arguments"
-    # Check that the variable $ES_PORT is set and non-empty
-    [[ -z "${ES_PORT+xxx}" ]] &&
-    { log_error "The variable \$ES_PORT is not set. Make sure it is set in the configuration file."; usage; return 1; }
-    [[ -z "$ES_PORT" && "${ES_PORT+xxx}" = "xxx" ]] &&
-    { log_error "The variable \$ES_PORT is set but empty. Make sure it is set in the configuration file."; usage; return 1; }
-
-    # Check that the variable $ES_INDEX is set and non-empty
-    [[ -z "${ES_INDEX+xxx}" ]] &&
-    { log_error "The variable \$ES_INDEX is not set. Make sure it is set in the configuration file."; usage; return 1; }
-    [[ -z "$ES_INDEX" && "${ES_INDEX+xxx}" = "xxx" ]] &&
-    { log_error "The variable \$ES_INDEX is set but empty. Make sure it is set in the configuration file."; usage; return 1; }
+    # Check that the variable $ES_URL is set and non-empty
+    [[ -z "${ES_URL+xxx}" ]] &&
+    { log_error "The variable \$ES_URL is not set. Make sure it is set in the configuration file."; usage; return 1; }
+    [[ -z "$ES_URL" && "${ES_URL+xxx}" = "xxx" ]] &&
+    { log_error "The variable \$ES_URL is set but empty. Make sure it is set in the configuration file."; usage; return 1; }
 
     # Check that the variable $ES_DATASET is set and non-empty
     [[ -z "${ES_DATASET+xxx}" ]] &&
@@ -154,7 +148,7 @@ run()
 
   [[ -f "${input}" ]] || { log_error "${command} cannot run: Missing input ${input}"; return 1; }
 
-  ${command} --connection-string "http://localhost:${ES_PORT}/${ES_INDEX}" --dataset=${ES_DATASET} --input "${input}" ${extra_args}
+  ${command} --connection-string "${ES_URL}" --dataset=${ES_DATASET} --input "${input}" ${extra_args}
 }
 
 download()
