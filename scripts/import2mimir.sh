@@ -222,7 +222,7 @@ import_oa() {
 download_oa() {
   mkdir -p "$DATA_DIR/oa"
   local OA_FILE="${DATA_DIR}/oa/$(basename ${OA_DOWNLOAD_URL})"
-  download "${OSM_DOWNLOAD_URL}" "${OA_FILE}"
+  download "${OA_DOWNLOAD_URL}" "${OA_FILE}"
 
   unzip -o -d "${DATA_DIR}/oa/" "${OA_FILE}"
   [[ $? != 0 ]] && { log_error "Could not extract OA CSV data from ${OA_FILE}. Aborting"; return 1; }
