@@ -46,18 +46,12 @@ impl DockerWrapper {
 
     fn setup(&mut self) -> Result<(), Box<dyn Error>> {
         info!("Launching ES docker");
-        let mut args = vec![
-            "run",
-            "--detach",
-            "--name=mimirsbrunn_tests",
-        ];
+        let mut args = vec!["run", "--detach", "--name=mimirsbrunn_tests"];
         if dont_kill_the_wale() {
             args.push("-p=9242:9200");
         }
         args.push("elasticsearch:2");
-        let status = Command::new("docker")
-            .args(args)
-            .status()?;
+        let status = Command::new("docker").args(args).status()?;
 
         if !status.success() {
             return Err(format!("`docker run` failed {}", &status).into());
