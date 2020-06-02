@@ -46,26 +46,6 @@ use std::collections::BTreeMap;
 use std::marker::PhantomData;
 use std::time;
 
-const SYNONYMS: [&str; 17] = [
-    "cc,centre commercial",
-    "hotel de ville,mairie",
-    "gare sncf,gare",
-    "chu,chr,hopital",
-    "ld,lieu-dit",
-    "st,saint",
-    "ste,sainte",
-    "bvd,bld,bd,boulevard",
-    "pt,pont",
-    "rle,ruelle",
-    "rte,route",
-    "vla,villa",
-    "grand-champ,grandchamp",
-    "fac,faculte,ufr,universite",
-    "embarcadere,gare maritime",
-    "cpam,securite sociale",
-    "anpe,pole emploi",
-];
-
 lazy_static::lazy_static! {
     static ref ES_REQ_HISTOGRAM: Histogram = register_histogram!(
         "bragi_elasticsearch_reverse_duration_seconds",
@@ -371,8 +351,8 @@ impl Rubber {
                 format_err!("Error occurred when creating index: {} err: {}", name, err)
             })?;
 
-        let synonyms: Vec<_> = SYNONYMS
-            .iter()
+        let synonyms: Vec<_> = include_str!("../../../config/synonyms.txt")
+            .lines()
             .map(|s| serde_json::Value::String((*s).to_string()))
             .collect();
 
