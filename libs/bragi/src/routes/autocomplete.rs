@@ -134,13 +134,24 @@ impl JsonParams {
     }
 }
 
-pub fn call_autocomplete(
-    params: &Params,
-    state: &Context,
-    shape: Option<Geometry>,
+pub fn autocomplete(
+    params: BragiQuery<Params>,
+    state: Data<Context>,
+    json_params: Option<Json<JsonParams>>,
 ) -> Result<HttpResponse, model::BragiError> {
     let langs = params.langs();
     let rubber = state.get_rubber_for_autocomplete(params.timeout());
+    // Unwrap change into GeoJson, then rewrap.
+    let shape = match json_params {
+        None => None,
+        Some(json) => {
+            match json.into_inner().get_geometry() {
+                Ok(shape) => Some(shape),
+                Err(e) => return Err(e)
+            }
+        }
+    };
+
     let res = query::autocomplete(
         &params.q,
         &params
@@ -174,23 +185,4 @@ pub fn call_autocomplete(
                 )]))
                 .json(v)
         })
-}
-
-pub fn autocomplete(
-    params: BragiQuery<Params>,
-    state: Data<Context>,
-) -> Result<HttpResponse, model::BragiError> {
-    call_autocomplete(&*params, &*state, None)
-}
-
-pub fn post_autocomplete(
-    params: BragiQuery<Params>,
-    state: Data<Context>,
-    json_params: Json<JsonParams>,
-) -> Result<HttpResponse, model::BragiError> {
-    call_autocomplete(
-        &*params,
-        &*state,
-        Some(json_params.into_inner().get_geometry()?),
-    )
 }

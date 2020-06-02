@@ -5,7 +5,7 @@ mod params;
 mod reverse;
 mod status;
 
-pub use autocomplete::{autocomplete, post_autocomplete, JsonParams};
+pub use autocomplete::{autocomplete, JsonParams};
 pub use entry_point::entry_point;
 pub use features::features;
 pub use reverse::reverse;
