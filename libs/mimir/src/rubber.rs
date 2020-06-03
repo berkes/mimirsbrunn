@@ -341,15 +341,6 @@ impl Rubber {
                 format_err!("Error occurred when creating index: {} err: {}", name, err)
             })?;
 
-        let synonyms: Vec<_> = include_str!("../../../config/synonyms.txt")
-            .lines()
-            .map(|s| serde_json::Value::String((*s).to_string()))
-            .collect();
-
-        *settings_json_value
-            .pointer_mut("/settings/analysis/filter/synonym_filter/synonyms")
-            .unwrap() = serde_json::Value::Array(synonyms);
-
         *settings_json_value
             .pointer_mut("/settings/number_of_shards")
             .unwrap() = serde_json::Value::from(index_settings.nb_shards);
