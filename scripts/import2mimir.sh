@@ -14,7 +14,6 @@ readonly SCRIPT_NAME=$(basename "$0")
 APPLICATION="${SCRIPT_NAME%.*}"
 VERSION=0.0.1
 EXECUTION_DATE=`date '+%Y%m%d'`
-LOG_FILE="${APPLICATION}-${EXECUTION_DATE}.log"
 CONFIG_FILE="${APPLICATION}.rc"
 QUIET=false
 DEFAULT_TASK="none"
@@ -55,9 +54,8 @@ log_info()
 {
     DATE=`date -R`
     if ! $QUIET; then
-        echo -e "\e[30;37m$DATE | $1\e[0m"
+      echo "INFO  | $DATE | $1"
     fi
-    echo "INFO  | $DATE | $1" >> $LOG_FILE
 }
 
 # $1: error message string
@@ -65,9 +63,8 @@ log_error()
 {
     DATE=`date -R`
     if ! $QUIET; then
-        echo -e "\e[91m$DATE | $1\e[0m" >&2
+      echo "ERROR | $DATE | $1"
     fi
-    echo "ERROR | $DATE | $1" >> $LOG_FILE
 }
 
 # We check all the executables that will be called in this script.
