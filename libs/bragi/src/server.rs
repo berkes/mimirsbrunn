@@ -1,6 +1,11 @@
 use crate::extractors::ActixError;
 use crate::routes::{
-    autocomplete, entry_point, feature, post_autocomplete, reverse, status, JsonParams,
+    autocomplete, post_autocomplete,
+    entry_point,
+    feature, 
+    features, post_features,
+    reverse,
+    status, JsonParams,
 };
 use crate::{Args, Context};
 use actix_web::FromRequest;
@@ -36,6 +41,15 @@ pub fn configure_server(cfg: &mut web::ServiceConfig) {
         web::resource("/features/{id}")
             .name("feature")
             .route(web::get().to(feature)),
+    )
+    .service(
+        web::resource("/features")
+            .name("features")
+            .route(web::get().to(features))
+            .route(web::post().to(post_features))
+            .data(web::Json::<JsonParams>::configure(|cfg| {
+                cfg.error_handler(|err, _req| ActixError::InvalidJson(format!("{}", err)).into())
+            })),
     )
     .service(
         web::resource("/reverse")

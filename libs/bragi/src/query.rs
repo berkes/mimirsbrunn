@@ -422,6 +422,70 @@ fn build_query<'a>(
     query.build()
 }
 
+fn build_filter<'a>(
+    coord: Option<Coord>,
+    shape: Option<Geometry>,
+    pt_datasets: &[&str],
+    all_data: bool,
+    zone_types: &[&str],
+    poi_types: &[&str],
+) -> Query {
+    let mut filters = vec![];
+
+    // if searching through all data, no coverage filter
+    if !all_data {
+        filters.push(build_coverage_condition(pt_datasets));
+    }
+
+    // We want to limit the search to the geographic shape given in argument,
+    // except for stop areas
+    if let Some(s) = shape {
+        let filter_wo_stop = Query::build_bool()
+            .with_must(vec![
+                Query::build_bool()
+                    .with_must_not(Query::build_term("_type", Stop::doc_type()).build())
+                    .build(),
+                Query::build_geo_shape("approx_coord")
+                    .with_geojson(s)
+                    .build(),
+            ])
+            .build();
+        let filter_w_stop = Query::build_term("_type", Stop::doc_type()).build();
+        let geo_filter = Query::build_bool()
+            .with_should(vec![filter_w_stop, filter_wo_stop])
+            .build();
+        filters.push(geo_filter);
+    }
+
+    if !zone_types.is_empty() {
+        let zone_types_filter = Query::build_bool()
+            .with_should(
+                zone_types
+                .iter()
+                .map(|x| Query::build_match("zone_type", *x).build())
+                .collect::<Vec<_>>(),
+            )
+            .build();
+        filters.push(zone_types_filter);
+    }
+    if !poi_types.is_empty() {
+        let poi_types_filter = Query::build_bool()
+            .with_should(
+                poi_types
+                .iter()
+                .map(|x| Query::build_match("poi_type.id", *x).build())
+                .collect::<Vec<_>>(),
+            )
+            .build();
+        filters.push(poi_types_filter);
+    }
+
+    Query::build_bool()
+        .with_must(Query::build_match_all().build())
+        .with_filter(Query::build_bool().with_must(filters).build())
+        .build()
+}
+
 #[allow(clippy::too_many_arguments)]
 fn query(
     q: &str,
@@ -507,6 +571,100 @@ fn query(
     read_places(result, coord.as_ref())
 }
 
+#[allow(clippy::too_many_arguments)]
+fn filter(
+    coord: Option<Coord>,
+    pt_datasets: &[&str],
+    poi_datasets: &[&str],
+    all_data: bool,
+    rubber: &mut Rubber,
+    offset: u64,
+    limit: u64,
+    shape: Option<Geometry>,
+    types: &[&str],
+    zone_types: &[&str],
+    poi_types: &[&str],
+    debug: bool,
+) -> Result<Vec<mimir::Place>, EsError> {
+    let query = build_filter(
+        coord,
+        shape,
+        pt_datasets,
+        all_data,
+        zone_types,
+        poi_types
+    );
+
+    let indexes = get_indexes(all_data, &pt_datasets, &poi_datasets, types);
+    let indexes = indexes
+        .iter()
+        .map(|index| index.as_str())
+        .collect::<Vec<&str>>();
+    debug!("ES indexes: {:?}", indexes);
+
+    if indexes.is_empty() {
+        // if there is no indexes, rs_es search with index "_all"
+        // but we want to return empty response in this case.
+        return Ok(vec![]);
+    }
+    let timer = ES_REQ_HISTOGRAM
+        .get_metric_with_label_values(&["filter"])
+        .map(|h| h.start_timer())
+        .map_err(
+            |err| error!("impossible to get ES_REQ_HISTOGRAM metrics"; "err" => err.to_string()),
+        )
+        .ok();
+
+    let timeout = rubber.timeout.map(|t| format!("{:?}", t));
+    let mut search_query = rubber.es_client.search_query();
+
+    //let sort_by = rs_es::operations::search::SortBy::Field(Field::new("name", Some(rs_es::operations::search::Order::Desc)));
+    use rs_es::operations::search::Order;
+    let mut sort_fields = vec![];
+
+    if let Some(coord) = coord {
+        // TODO: Coord should have an into<Location> trait instead.
+        let location = rs_u::Location::LatLon(coord.y, coord.x);
+        let geo_distance_sort = rs_es::operations::search::GeoDistance::new("coord")
+            .with_location(location)
+            .with_order(Order::Asc)
+            .with_unit(rs_u::DistanceUnit::Meter)
+            .build();
+
+        sort_fields.push(geo_distance_sort);
+    }
+    let sort = rs_es::operations::search::Sort::new(sort_fields);
+
+    let search_query = search_query
+        .with_ignore_unavailable(true)
+        .with_indexes(&indexes)
+        .with_query(&query)
+        .with_from(offset)
+        .with_size(limit)
+        .with_sort(&sort)
+        // No need to fetch "boundary" as it's not used in the geocoding response
+        // and is very large in some documents (countries...)
+        .with_source(Source::exclude(&["boundary"]));
+
+    // We don't want to clutter the Query URL, so we only add an explanation if the option is used
+    let search_query = if debug {
+        search_query.with_explain(true)
+    } else {
+        search_query
+    };
+
+    if let Some(timeout) = &timeout {
+        search_query.with_timeout(timeout.as_str());
+    }
+    let result = search_query.send()?;
+
+    if let Some(t) = timer {
+        t.observe_duration();
+    }
+
+    read_places(result, coord.as_ref())
+}
+
 pub fn feature(
     pt_datasets: &[&str],
     poi_datasets: &[&str],
@@ -569,6 +727,53 @@ pub fn feature(
     } else {
         read_places(result, None).map_err(model::BragiError::from)
     }
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn features(
+    pt_datasets: &[&str],
+    poi_datasets: &[&str],
+    all_data: bool,
+    offset: u64,
+    limit: u64,
+    coord: Option<Coord>,
+    shape: Option<Geometry>,
+    types: &[&str],
+    zone_types: &[&str],
+    poi_types: &[&str],
+    mut rubber: Rubber,
+    debug: bool,
+) -> Result<Vec<mimir::Place>, BragiError> {
+    // Perform parameters validation.
+    if !zone_types.is_empty() && !types.iter().any(|s| *s == "zone") {
+        return Err(BragiError::InvalidParam(
+            "zone_type[] parameter requires to have 'type[]=zone'",
+        ));
+    }
+    if !poi_types.is_empty() && !types.iter().any(|s| *s == "poi") {
+        return Err(BragiError::InvalidParam(
+            "poi_type[] parameter requires to have 'type[]=poi'",
+        ));
+    }
+
+    // First we try a pretty exact match on the prefix.
+    // If there are no results then we do a new fuzzy search (matching ngrams)
+    let results = filter(
+        coord,
+        &pt_datasets,
+        &poi_datasets,
+        all_data,
+        &mut rubber,
+        offset,
+        limit,
+        shape.clone(),
+        &types,
+        &zone_types,
+        &poi_types,
+        debug,
+    )
+    .map_err(model::BragiError::from)?;
+    Ok(results)
 }
 
 #[allow(clippy::too_many_arguments)]
