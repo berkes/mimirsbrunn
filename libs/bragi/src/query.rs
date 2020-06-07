@@ -34,7 +34,7 @@ use mimir::objects::{Addr, Admin, Coord, MimirObject, Poi, Stop, Street};
 use mimir::rubber::{get_indexes, read_places, Rubber};
 use prometheus::{self, exponential_buckets, histogram_opts, register_histogram_vec, HistogramVec};
 use rs_es::error::EsError;
-use rs_es::operations::search::Source;
+use rs_es::operations::search::{Source, Order};
 use rs_es::query::compound::BoostMode;
 use rs_es::query::functions::{DecayOptions, FilteredFunction, Function, Modifier};
 use rs_es::query::Query;
@@ -609,8 +609,6 @@ fn filter(
     let timeout = rubber.timeout.map(|t| format!("{:?}", t));
     let mut search_query = rubber.es_client.search_query();
 
-    //let sort_by = rs_es::operations::search::SortBy::Field(Field::new("name", Some(rs_es::operations::search::Order::Desc)));
-    use rs_es::operations::search::Order;
     let mut sort_fields = vec![];
 
     if let Some(coord) = coord {
