@@ -9,8 +9,8 @@ info:
     name: AGPL 3
     url: 'https://github.com/CanalTP/mimirsbrunn/blob/master/LICENSE'
 servers:
-  - url: 'http://localhost:4000'
-    description: Local development version
+  - url: 'https://api.tijden.org'
+    description: Demo API server
 paths:
   /autocomplete:
     get:
