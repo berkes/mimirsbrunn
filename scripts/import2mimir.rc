@@ -22,6 +22,8 @@ OSM_REGION="netherlands-gelderland"
 # OSM POI config
 OSM_POI_CONFIG="/etc/mimirsbrunn/poi_config.json"
 
+FORCE_DOWNLOAD="false"
+
 # Binaries. Ensure they are in the PATH
 COSMOGONY="cosmogony"
 OSM2MIMIR="osm2mimir"

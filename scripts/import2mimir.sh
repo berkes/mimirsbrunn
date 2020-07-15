@@ -153,7 +153,7 @@ download()
   local url=${1}
   local output=${2}
   local extra_args=${@:3}
-  if [[ -f ${output} ]]; then
+  if [[ -f ${output} ]] && [[ "$FORCE_DOWNLOAD" = false ]]; then
     log_info "Local file ${output} exist. Skipping download from ${url}"
   else
     log_info "Downloading ${output} from ${url}"
@@ -224,7 +224,13 @@ download_oa() {
   local OA_FILE="${DATA_DIR}/oa/$(basename ${OA_DOWNLOAD_URL})"
   download "${OA_DOWNLOAD_URL}" "${OA_FILE}"
 
-  unzip -o -d "${DATA_DIR}/oa/" "${OA_FILE}"
+  if [[ "$FORCE_DOWNLOAD" = false ]]; then
+    _unzip_opt='-o'
+  else
+    _unzip_opt='-n'
+  fi
+
+  unzip $_unzip_opt -d "${DATA_DIR}/oa/" "${OA_FILE}"
   [[ $? != 0 ]] && { log_error "Could not extract OA CSV data from ${OA_FILE}. Aborting"; return 1; }
 
   return 0
