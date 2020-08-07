@@ -35,16 +35,6 @@
     { "id": "HEALTH_HOSPITALEMERGENCY", "name": "HEALTH_HOSPITALEMERGENCY" },
     { "id": "HEALTH_PHARMACY", "name": "HEALTH_PHARMACY" },
     { "id": "HEALTH_VETERINARY", "name": "HEALTH_VETERINARY" },
-    { "id": "LANDUSE_ALLOTMENTS", "name": "LANDUSE_ALLOTMENTS" },
-    { "id": "LANDUSE_CONIFEROUS", "name": "LANDUSE_CONIFEROUS" },
-    { "id": "LANDUSE_CONIFEROUSDECIDUOUS", "name": "LANDUSE_CONIFEROUSDECIDUOUS" },
-    { "id": "LANDUSE_DECIDUOUS", "name": "LANDUSE_DECIDUOUS" },
-    { "id": "LANDUSE_GRASS", "name": "LANDUSE_GRASS" },
-    { "id": "LANDUSE_HILLS", "name": "LANDUSE_HILLS" },
-    { "id": "LANDUSE_MILITARY", "name": "LANDUSE_MILITARY" },
-    { "id": "LANDUSE_QUARY", "name": "LANDUSE_QUARY" },
-    { "id": "LANDUSE_SCRUB", "name": "LANDUSE_SCRUB" },
-    { "id": "LANDUSE_SWAMP", "name": "LANDUSE_SWAMP" },
     { "id": "MONEY_ATM", "name": "MONEY_ATM" },
     { "id": "MONEY_BANK", "name": "MONEY_BANK" },
     { "id": "MONEY_EXCHANGE", "name": "MONEY_EXCHANGE" },
@@ -812,15 +802,6 @@
     {
       "osm_tags_filters": [
         {
-          "key": "geological",
-          "value": "outcrop"
-        }
-      ],
-      "poi_type_id": "LANDUSE_HILLS"
-    },
-    {
-      "osm_tags_filters": [
-        {
           "key": "highway",
           "value": "rest_area"
         }
@@ -1033,28 +1014,10 @@
       "osm_tags_filters": [
         {
           "key": "military",
-          "value": "danger_area"
-        }
-      ],
-      "poi_type_id": "LANDUSE_MILITARY"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "military",
           "value": "naval_base"
         }
       ],
       "poi_type_id": "TRANSPORT_MARINA"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "military",
-          "value": "range"
-        }
-      ],
-      "poi_type_id": "LANDUSE_MILITARY"
     },
     {
       "osm_tags_filters": [
@@ -2502,28 +2465,10 @@
       "osm_tags_filters": [
         {
           "key": "leisure",
-          "value": "common"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "leisure",
           "value": "dance"
         }
       ],
       "poi_type_id": "TOURIST_NIGHTCLUB"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "leisure",
-          "value": "dog_park"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
     },
     {
       "osm_tags_filters": [
@@ -2560,24 +2505,6 @@
         }
       ],
       "poi_type_id": "SPORT_MINIATURGOLF"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "leisure",
-          "value": "nature_reserve"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "leisure",
-          "value": "park"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
     },
     {
       "osm_tags_filters": [
@@ -2677,211 +2604,6 @@
       "osm_tags_filters": [
         {
           "key": "landuse",
-          "value": "allotments"
-        }
-      ],
-      "poi_type_id": "LANDUSE_ALLOTMENTS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "brownfield"
-        }
-      ],
-      "poi_type_id": "LANDUSE_QUARY"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "cemetery"
-        }
-      ],
-      "poi_type_id": "BARRIER_BLOCKS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "farmland"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "farm"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "forest"
-        }
-      ],
-      "poi_type_id": "LANDUSE_CONIFEROUSDECIDUOUS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "forest"
-        },
-        {
-          "key": "wood",
-          "value": "forest"
-        },
-        {
-          "key": "wood",
-          "value": "coniferous"
-        }
-      ],
-      "poi_type_id": "LANDUSE_CONIFEROUS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "forest"
-        },
-        {
-          "key": "wood",
-          "value": "forest"
-        },
-        {
-          "key": "wood",
-          "value": "deciduous"
-        }
-      ],
-      "poi_type_id": "LANDUSE_DECIDUOUS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "grass"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "greenfield"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "meadow"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "greenhouse_horticulture"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "industrial"
-        }
-      ],
-      "poi_type_id": "POI_CRANE"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "landfill"
-        }
-      ],
-      "poi_type_id": "LANDUSE_HILLS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "military"
-        }
-      ],
-      "poi_type_id": "LANDUSE_MILITARY"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "orchard"
-        }
-      ],
-      "poi_type_id": "LANDUSE_SCRUB"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "plant_nursery"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "quarry"
-        }
-      ],
-      "poi_type_id": "LANDUSE_QUARY"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "recreation_ground"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "village_green"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
-          "value": "vineyard"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "landuse",
           "value": "retail"
         }
       ],
@@ -2972,60 +2694,6 @@
       "osm_tags_filters": [
         {
           "key": "natural",
-          "value": "fell"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
-          "value": "grassland"
-        }
-      ],
-      "poi_type_id": "LANDUSE_GRASS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
-          "value": "heath"
-        }
-      ],
-      "poi_type_id": "LANDUSE_SCRUB"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
-          "value": "marsh"
-        }
-      ],
-      "poi_type_id": "LANDUSE_SWAMP"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
-          "value": "wetland"
-        }
-      ],
-      "poi_type_id": "LANDUSE_SWAMP"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
-          "value": "mud"
-        }
-      ],
-      "poi_type_id": "LANDUSE_SWAMP"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
           "value": "sand"
         }
       ],
@@ -3035,71 +2703,10 @@
       "osm_tags_filters": [
         {
           "key": "natural",
-          "value": "scree"
-        }
-      ],
-      "poi_type_id": "LANDUSE_QUARY"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
-          "value": "scrub"
-        }
-      ],
-      "poi_type_id": "LANDUSE_SCRUB"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
           "value": "spring"
         }
       ],
       "poi_type_id": "WATER_WEIR"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
-          "value": "wood"
-        }
-      ],
-      "poi_type_id": "LANDUSE_CONIFEROUSDECIDUOUS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
-          "value": "wood"
-        },
-        {
-          "key": "wood",
-          "value": "wood"
-        },
-        {
-          "key": "wood",
-          "value": "coniferous"
-        }
-      ],
-      "poi_type_id": "LANDUSE_CONIFEROUS"
-    },
-    {
-      "osm_tags_filters": [
-        {
-          "key": "natural",
-          "value": "wood"
-        },
-        {
-          "key": "wood",
-          "value": "wood"
-        },
-        {
-          "key": "wood",
-          "value": "deciduous"
-        }
-      ],
-      "poi_type_id": "LANDUSE_DECIDUOUS"
     },
 
     {
