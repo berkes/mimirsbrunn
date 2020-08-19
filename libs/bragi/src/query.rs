@@ -423,7 +423,6 @@ fn build_query<'a>(
 }
 
 fn build_filter<'a>(
-    coord: Option<Coord>,
     shape: Option<Geometry>,
     pt_datasets: &[&str],
     all_data: bool,
@@ -587,7 +586,6 @@ fn filter(
     debug: bool,
 ) -> Result<Vec<mimir::Place>, EsError> {
     let query = build_filter(
-        coord,
         shape,
         pt_datasets,
         all_data,
